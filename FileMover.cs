@@ -1,12 +1,9 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace canon_file_organiser
 {
@@ -14,6 +11,7 @@ namespace canon_file_organiser
     {
         private readonly string _rootDirectory;
         private readonly string _targetDirectory;
+        private const string RAW_IMAGES_PATH = "RAW Images";
 
         public FileMover(string rootDirectory, string targetDirectory)
         {
@@ -36,15 +34,16 @@ namespace canon_file_organiser
                 .ForEach(grouping =>
                 {
                     var newFolder = $"{_targetDirectory}/{grouping.Key}/";
+                    var newRawFolder = $"{_targetDirectory}/{RAW_IMAGES_PATH}/{grouping.Key}";
                     Directory.CreateDirectory(newFolder);
-                    Directory.CreateDirectory($"{newFolder}/RAW");
+                    Directory.CreateDirectory(newRawFolder);
                     foreach (var file in grouping)
                     {
                         var fileName = file[file.LastIndexOf("\\")..];
                         File.Move($"{currentDirectory}/{fileName}", $"{newFolder}/{fileName}");
                         
                         var rawFileName = fileName.Replace(".JPG", ".CR2");
-                        File.Move($"{currentDirectory}/{rawFileName}", $"{newFolder}/RAW/{rawFileName}");
+                        File.Move($"{currentDirectory}/{rawFileName}", $"{newRawFolder}/{rawFileName}");
                     }
                 });
 
